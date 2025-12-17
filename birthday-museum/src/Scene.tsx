@@ -1,7 +1,14 @@
+// This file is no longer used - SceneWrapper in App.tsx is used instead
+// Keeping for reference only
+
 import { TableDisplay } from './TableDisplay';
 import { Hallway } from './Hallway';
 
-export const Scene = () => {
+interface SceneProps {
+    setReading: (reading: boolean) => void;
+}
+
+export const Scene = ({ setReading }: SceneProps) => {
     return (
         <>
             <ambientLight intensity={0.5} />
@@ -13,7 +20,7 @@ export const Scene = () => {
                 <meshStandardMaterial color="#222" />
             </mesh>
 
-            <TableDisplay />
+            <TableDisplay setReading={setReading} />
             <Hallway />
         </>
     );

@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo } from 'react';
 import { Cylinder, Box, Text, Torus } from '@react-three/drei';
 import { Frame } from './Frame';
+import { Fireworks } from './Fireworks';
 import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -16,6 +17,17 @@ export const TableDisplay = ({ setReading }: TableDisplayProps) => {
     const [hovered, setHovered] = useState(false);
     const cardRef = useRef<THREE.Group>(null);
     const { camera, raycaster } = useThree();
+    const [showFireworks, setShowFireworks] = useState(false);
+
+    const handleCakeClick = (e: any) => {
+        e.stopPropagation();
+        // Delay fireworks by 1 second
+        setTimeout(() => {
+            setShowFireworks(true);
+            // Reset after a few seconds to allow re-triggering
+            setTimeout(() => setShowFireworks(false), 6000);
+        }, 1000);
+    };
 
     // Raycasting logic
     useFrame(() => {
@@ -158,7 +170,7 @@ export const TableDisplay = ({ setReading }: TableDisplayProps) => {
             </group>
 
             {/* Cake */}
-            <group position={cakePosition}>
+            <group position={cakePosition} onClick={handleCakeClick}>
                 <Cylinder args={[cakeRadius, cakeRadius, cakeHeight, 32]}>
                     <meshStandardMaterial color="#FFC0CB" />
                 </Cylinder>
@@ -190,6 +202,9 @@ export const TableDisplay = ({ setReading }: TableDisplayProps) => {
                     </group>
                 ))}
             </group>
+
+            {/* Fireworks Effect */}
+            {showFireworks && <Fireworks position={[0, tableHeight + 1.5, 0]} />}
 
             {/* Frames on Table - Angled to face the viewer/center */}
             {/* Front Left */}

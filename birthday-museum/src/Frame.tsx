@@ -14,9 +14,14 @@ interface FrameProps {
 export const Frame = ({ url, position, rotation = [0, 0, 0], scale = [1, 1, 1], frameColor = '#DAA520' }: FrameProps) => {
     const texture = useLoader(TextureLoader, url);
 
-    // Frame dimensions
-    const width = 1;
+    // Calculate aspect ratio safely
+    const image = texture.image;
+    const aspectRatio = (image && image.width && image.height) ? image.width / image.height : 1;
+
+    // Base dimensions - keep height fixed at 1, adjust width
     const height = 1;
+    const width = height * aspectRatio;
+
     const thickness = 0.05;
     const borderSize = 0.1;
 
@@ -48,7 +53,7 @@ export const Frame = ({ url, position, rotation = [0, 0, 0], scale = [1, 1, 1], 
             </Box>
 
             {/* Image */}
-            <mesh>
+            <mesh frustumCulled={false}>
                 <planeGeometry args={[width, height]} />
                 <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
             </mesh>

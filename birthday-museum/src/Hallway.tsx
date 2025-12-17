@@ -20,6 +20,9 @@ export const Hallway = () => {
         'images/IMG_5511.jpeg',
         'images/IMG_7607.JPG',
         'images/IMG_7985.JPG',
+        'images/033F8880-7CA5-41D8-B3EB-8AA7C7FEF7C5_1_105_c.jpeg',
+        'images/8A00E952-44C1-4615-810C-B7FCF3CF98C9_1_102_o.jpeg',
+        'images/F3F8D72C-8170-488D-8C45-AE7166C13845_1_102_a.jpeg',
     ];
 
     const heartShape = useMemo(() => {
@@ -36,7 +39,7 @@ export const Hallway = () => {
     }, []);
 
     const wallTexture = useMemo(() => {
-        const texture = new THREE.TextureLoader().load('images/wall_decoration.png');
+        const texture = new THREE.TextureLoader().load('images/wall_decoration.jpg');
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(4, 3); // Adjusted for longer hallway
@@ -68,38 +71,47 @@ export const Hallway = () => {
             {/* Ceiling */}
             <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, hallwayHeight, startZ + hallwayLength / 2]}>
                 <planeGeometry args={[hallwayWidth, hallwayLength]} />
-                <meshStandardMaterial color="#DAA520" /> {/* Gold like frames */}
+                <meshStandardMaterial color="#b0b1b2" /> {/* Dark grey to match walls */}
             </mesh>
 
             {/* Left Wall - With Decoration */}
             <Box args={[0.1, hallwayHeight, hallwayLength]} position={[-hallwayWidth / 2, hallwayHeight / 2, startZ + hallwayLength / 2]}>
-                <meshStandardMaterial map={wallTexture} color="#F5F5DC" opacity={0.6} transparent /> {/* More subtle */}
+                <meshStandardMaterial map={wallTexture} />
             </Box>
 
             {/* Right Wall - With Decoration */}
             <Box args={[0.1, hallwayHeight, hallwayLength]} position={[hallwayWidth / 2, hallwayHeight / 2, startZ + hallwayLength / 2]}>
-                <meshStandardMaterial map={wallTexture} color="#F5F5DC" opacity={0.6} transparent /> {/* More subtle */}
+                <meshStandardMaterial map={wallTexture} />
             </Box>
 
             {/* End Wall - With Decoration */}
             <Box args={[hallwayWidth, hallwayHeight, 0.1]} position={[0, hallwayHeight / 2, startZ + hallwayLength]}>
-                <meshStandardMaterial map={wallTexture} color="#F5F5DC" opacity={0.6} transparent /> {/* More subtle */}
+                <meshStandardMaterial map={wallTexture} />
             </Box>
 
             {/* Paintings on Walls */}
             {/* Left Wall Paintings */}
-            <Frame url={hallwayImages[0]} position={[-hallwayWidth / 2 + 0.15, 2.5, startZ + 5]} rotation={[0, Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[1]} position={[-hallwayWidth / 2 + 0.15, 2.5, startZ + 10]} rotation={[0, Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[2]} position={[-hallwayWidth / 2 + 0.15, 2.5, startZ + 15]} rotation={[0, Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[3]} position={[-hallwayWidth / 2 + 0.15, 2.5, startZ + 20]} rotation={[0, Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[4]} position={[-hallwayWidth / 2 + 0.15, 2.5, startZ + 25]} rotation={[0, Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
+            {/* Left Wall Paintings - First 7 images */}
+            {hallwayImages.slice(0, 7).map((img, index) => (
+                <Frame
+                    key={`left-${index}`}
+                    url={img}
+                    position={[-hallwayWidth / 2 + 0.15, 2.5, startZ + 4 + index * 4]}
+                    rotation={[0, Math.PI / 2, 0]}
+                    scale={[1.5, 1.5, 1.5]}
+                />
+            ))}
 
-            {/* Right Wall Paintings */}
-            <Frame url={hallwayImages[5]} position={[hallwayWidth / 2 - 0.15, 2.5, startZ + 5]} rotation={[0, -Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[6]} position={[hallwayWidth / 2 - 0.15, 2.5, startZ + 10]} rotation={[0, -Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[7]} position={[hallwayWidth / 2 - 0.15, 2.5, startZ + 15]} rotation={[0, -Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[8]} position={[hallwayWidth / 2 - 0.15, 2.5, startZ + 20]} rotation={[0, -Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
-            <Frame url={hallwayImages[9]} position={[hallwayWidth / 2 - 0.15, 2.5, startZ + 25]} rotation={[0, -Math.PI / 2, 0]} scale={[1.8, 1.8, 1.8]} />
+            {/* Right Wall Paintings - Remaining images */}
+            {hallwayImages.slice(7).map((img, index) => (
+                <Frame
+                    key={`right-${index}`}
+                    url={img}
+                    position={[hallwayWidth / 2 - 0.15, 2.5, startZ + 4 + index * 4]}
+                    rotation={[0, -Math.PI / 2, 0]}
+                    scale={[1.5, 1.5, 1.5]}
+                />
+            ))}
 
             {/* 3D Heart Sculpture */}
             <group position={[0, 1.5, startZ + hallwayLength - 2]}> {/* Raised Y to 1.5 */}

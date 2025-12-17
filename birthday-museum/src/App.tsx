@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { PointerLockControls, Text, Box } from '@react-three/drei';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 
 import { Vector3 } from 'three';
 import * as THREE from 'three';
@@ -98,7 +98,7 @@ const Player = ({ reading, setLocked }: { reading: boolean, setLocked: (locked: 
     };
   }, [reading]);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (reading) return; // Stop movement when reading
 
     const speed = 3.0; // Reduced speed
@@ -132,51 +132,7 @@ const Player = ({ reading, setLocked }: { reading: boolean, setLocked: (locked: 
   return <PointerLockControls selector="#canvas-container" onLock={() => setLocked(true)} onUnlock={() => setLocked(false)} />;
 };
 
-const ReadingView = ({ onClose }: { onClose: () => void }) => {
-  const group = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (group.current) {
-      // Simple float animation
-      group.current.position.y = Math.sin(state.clock.elapsedTime) * 0.05;
-    }
-  });
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'KeyF') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
-
-  return (
-    <group position={[0, 0, -0.5]} ref={group}>
-      {/* Card Open Book Style */}
-      <group rotation={[0.5, 0, 0]}>
-        {/* Left Page */}
-        <Box args={[0.3, 0.4, 0.01]} position={[-0.15, 0, 0]}>
-          <meshStandardMaterial color="white" />
-        </Box>
-        {/* Right Page */}
-        <Box args={[0.3, 0.4, 0.01]} position={[0.15, 0, 0]}>
-          <meshStandardMaterial color="white" />
-        </Box>
-
-        {/* Text Content */}
-        <Text position={[0.15, 0, 0.01]} fontSize={0.02} color="black" maxWidth={0.25} textAlign="center">
-          Happy Birthday!
-
-          This is a test text.
-
-          I hope you have a wonderful day!
-        </Text>
-      </group>
-    </group>
-  );
-};
+// ReadingView component removed - using CardOverlay instead
 
 // HUD Component removed as it was unused and replaced by CardOverlay
 
@@ -222,15 +178,45 @@ const CardOverlay = ({ reading, setReading }: { reading: boolean, setReading: (r
 
         {/* Text Content */}
         <Text position={[0.15, 0, 0.02]} rotation={[0, -0.2, 0]} fontSize={0.02} color="black" maxWidth={0.25} textAlign="center">
-          Happy Birthday!
+          Happy Birthday my love!
           {'\n\n'}
-          This is a test text.
+          Every picture in this hallway is a special moment, reminding me how beautiful life can be with you
           {'\n\n'}
-          I hope you have a wonderful day!
+          But my favorite memory is simply being with you.
+          {'\n\n'}
+          I love you ❤️
         </Text>
       </group>
     </group>
   );
+}
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: any }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ color: 'red', padding: '20px', background: 'rgba(0,0,0,0.8)', position: 'absolute', top: 0, left: 0, zIndex: 1000 }}>
+          <h1>Something went wrong.</h1>
+          <pre>{this.state.error?.toString()}</pre>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 function App() {
@@ -257,13 +243,15 @@ function App() {
       {!reading && !locked && <div className="instructions">Click to start. WASD to move. Mouse to look.</div>}
       {reading && <div className="hud-hint">Press F to close</div>}
 
-      <Canvas camera={{ position: [0, 1.7, 3], fov: 75 }}>
-        <Suspense fallback={null}>
-          <SceneWrapper setReading={setReading} />
-          <Player reading={reading} setLocked={setLocked} />
-          <CardOverlay reading={reading} setReading={setReading} />
-        </Suspense>
-      </Canvas>
+      <ErrorBoundary>
+        <Canvas camera={{ position: [0, 1.7, 3], fov: 75 }}>
+          <Suspense fallback={null}>
+            <SceneWrapper setReading={setReading} />
+            <Player reading={reading} setLocked={setLocked} />
+            <CardOverlay reading={reading} setReading={setReading} />
+          </Suspense>
+        </Canvas>
+      </ErrorBoundary>
     </div>
   );
 }
